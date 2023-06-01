@@ -5,10 +5,10 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import openai
 
 # Установите ваш API-токен OpenAI
-openai.api_key = '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'
+openai.api_key = 'опенаи токен'
 
 # Установите токен вашего Telegram-бота
-TELEGRAM_TOKEN = '6039335903:AAH0nPBAPTS_GBvnEnalISIv44cnV9chPf0'
+TELEGRAM_TOKEN = 'телеграм токен'
 
 # Инициализация логирования
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
