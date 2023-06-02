@@ -6,7 +6,7 @@ from telegram.ext import Filters as filters
 import openai
 
 # Установите ваш API-токен OpenAI
-openai.api_key = 'опенаи токен'
+openai.api_key = 'OpenAI токен'
 
 # Установите токен вашего Telegram-бота
 TELEGRAM_TOKEN = 'телеграм токен'
