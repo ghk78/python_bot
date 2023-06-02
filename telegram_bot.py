@@ -29,13 +29,22 @@ def echo(update: Update, context) -> None:
     response = chat_gpt_response(question)
     update.message.reply_text(response)
 
-# Функция, которая отправляет вопрос в ChatGPT и возвращает ответ
+chat_history = []
+
+#Функция, которая отправляет сообщение и получает ответ
 def chat_gpt_response(question: str) -> str:
-    """Отправляет вопрос в ChatGPT и возвращает ответ"""
+    """Отправляет вопрос и историю сообщений в ChatGPT и возвращает ответ"""
+    model_name = 'gpt-3.5-turbo'  # Имя модели GPT-3.5-turbo
+
+    # Создание списка сообщений, включая историю предыдущих сообщений
+    messages = [{"role": "system", "content": "You are a helpful assistant."}]
+    messages.extend([{"role": "user", "content": msg} for msg in chat_history])
+    messages.append({"role": "user", "content": question})
+
     response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[{"role": "system", "content": "You are a helpful assistant."},
-                  {"role": "user", "content": question}],
+        model=model_name,
+        messages=messages,
+      #Количество символов в ответе можно регулировать с помощью max_tokens
         max_tokens=1000,
         n=1,
         stop=None,
@@ -44,7 +53,11 @@ def chat_gpt_response(question: str) -> str:
         frequency_penalty=0.0,
         presence_penalty=0.0
     )
-    return response.choices[0].message.content.strip()
+
+    # Добавление ответа в историю сообщений
+    chat_history.append(response.choices[0].message.content)
+
+    return response.choices[0].message.content
 
 def main() -> None:
     """Главная функция для запуска бота"""
