@@ -1,7 +1,8 @@
 import os
 import logging
 from telegram import Update
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram.ext import Updater, CommandHandler, MessageHandler
+from telegram.ext import Filters as filters
 import openai
 
 # Установите ваш API-токен OpenAI
@@ -31,11 +32,11 @@ def echo(update: Update, context) -> None:
 # Функция, которая отправляет вопрос в ChatGPT и возвращает ответ
 def chat_gpt_response(question: str) -> str:
     """Отправляет вопрос в ChatGPT и возвращает ответ"""
-    model_name = 'gpt-3.5-turbo'  # Имя модели GPT-3.5-turbo
-    response = openai.Completion.create(
-        engine=model_name,
-        prompt=question,
-        max_tokens=100,
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "system", "content": "You are a helpful assistant."},
+                  {"role": "user", "content": question}],
+        max_tokens=1000,
         n=1,
         stop=None,
         temperature=0.7,
@@ -43,12 +44,12 @@ def chat_gpt_response(question: str) -> str:
         frequency_penalty=0.0,
         presence_penalty=0.0
     )
-    return response.choices[0].text.strip()
+    return response.choices[0].message.content.strip()
 
 def main() -> None:
     """Главная функция для запуска бота"""
     # Создание экземпляра Updater и передача токена Telegram
-    updater = Updater(TELEGRAM_TOKEN)
+    updater = Updater(TELEGRAM_TOKEN, use_context=True)
     
     # Получение диспетчера для регистрации обработчиков
     dispatcher = updater.dispatcher
@@ -57,7 +58,7 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler("start", start))
 
     # Зарегистрировать обработчик входящих сообщений
-    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
+    dispatcher.add_handler(MessageHandler(filters.text & ~filters.command, echo))
 
     # Запуск бота
     updater.start_polling()
